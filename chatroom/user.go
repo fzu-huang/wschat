@@ -3,9 +3,9 @@ package chatroom
 import (
 	"github.com/golang/glog"
 	"golang.org/x/net/websocket"
-	"time"
+	//"time"
 	"wschat/message"
-	. "wschat/util"
+	//. "wschat/util"
 )
 
 type OnlineRoomUser struct {
@@ -27,16 +27,17 @@ func (user *OnlineRoomUser) Run() {
 
 		case send := <-user.SendQueue:
 
-			var content string
-			if send.MType == CHATMSG {
-				content = send.ChatMSG.UserName + "says: " + send.ChatMSG.Words
-			} else if send.MType == USERLOGMSG {
-				content = send.LogMSG.UserName + "  " + send.LogMSG.LogOp
-			}
+			//			var content string
+			//			if send.MType == CHATMSG {
+			//				content = send.ChatMSG.UserName + " says: " + send.ChatMSG.Words
+			//			} else if send.MType == USERLOGMSG {
+			//				content = send.LogMSG.UserName + "  " + send.LogMSG.LogOp
+			//			}
 
-			_, err := user.Conn.Write([]byte(content))
+			err := websocket.JSON.Send(user.Conn, send)
+			//_, err := user.Conn.Write([]byte(content))
 			if err != nil {
-				glog.Errorln("Can't send msg from server to user: ", user.Email, ".  reason: ", err)
+				glog.Warningln("Can't send msg from server to user: ", user.Email, ".  reason: ", err)
 				break
 			}
 		}
@@ -47,20 +48,16 @@ func (user *OnlineRoomUser) Run() {
 
 func (user *OnlineRoomUser) readuntildead() {
 	for {
-		var content string
-		err := websocket.Message.Receive(user.Conn, &content)
+		//var content string
+		var m message.Message
+		err := websocket.JSON.Receive(user.Conn, &m)
+		//err := websocket.Message.Receive(user.Conn, &content)
 		if err != nil {
+			glog.Warningln("read json msg wrong!,", err.Error())
 			return
 		}
-		m := message.Message{
-			MType: CHATMSG,
-			Time:  time.Now(),
-		}
-		m.ChatMSG = message.ChatMsg{
-			UserName: user.Email,
-			Words:    content,
-		}
-		glog.Infoln(m)
+
+		//glog.Infoln(m)
 		user.InRoom.Broadcast <- m
 	}
 }

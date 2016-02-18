@@ -120,7 +120,7 @@ func CheckAndDelUser(conn *websocket.Conn) (bool, string) {
 	selectroom.Userlock.Unlock()
 	msg := m.Message{
 		MType: USERLOGMSG,
-		Time:  time.Now(),
+		Time:  time.Now().Format("2006-01-02 15:04:05"),
 	}
 	msg.LogMSG = m.LogMsg{email, EXIT}
 	selectroom.Broadcast <- msg
@@ -139,7 +139,7 @@ func CheckAndAddUser(conn *websocket.Conn) (bool, string) {
 
 	roomname := conn.Request().URL.Query().Get("room")
 	selectroom := CheckRoom(roomname)
-	glog.Infoln(email, " join the room:", selectroom)
+	glog.Infoln(email, " join the room:", selectroom.RoomName)
 	//	selectroom.Userlock.RLock()
 	//	if _, ok := selectroom.OnlineUser[email]; ok {
 	//		selectroom.Userlock.RUnlock()
@@ -157,7 +157,7 @@ func CheckAndAddUser(conn *websocket.Conn) (bool, string) {
 	if AddUser(selectroom, user) {
 		msg := m.Message{
 			MType: USERLOGMSG,
-			Time:  time.Now(),
+			Time:  time.Now().Format("2006-01-02 15:04:05"),
 		}
 		msg.LogMSG = m.LogMsg{user.Email, JOIN}
 		selectroom.Broadcast <- msg

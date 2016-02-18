@@ -13,5 +13,7 @@ const (
 	FINDNOROOM  = "find no room"
 	ROOMRENAME  = "room name  has been used"
 
-	WSSERVER = "localhost:23457"
+	PLAZA = "Plaza"
 )
+
+var WSSERVER string = "ws://127.0.0.1"
