@@ -7,19 +7,19 @@
   <body>
   <p>welcome! {{.email}}</p>
   <div class="container" >
-      <div class="container pull-left">
-        <div class="box box-info">
-          <div class="box-header with-border">
+      <div class="container" >
+        <div class="box box-info" style= "border:solid 1px black;">
+          <div class="box-header with-border" style= "border:solid 1px black;">
             <h3 id="chatroomname"class="box-title">Direct Chat</h3>
           </div>
-          <div class="box-body">
-            <div class="container">
-              <div id="output" class="modal-dialog pull-left" style="width:600px;height:300px;overflow:auto;overflow-x:hidden;">
+          <div class="box-body " >
+            <div class="container row show-grid">
+              <div id="output" class="modal-dialog pull-left col-lg-9" style="height:300px;overflow:auto;overflow-x:hidden; border-right:solid 1px grey;">
                 </div>
 
-              <div class="direct-chat-contacts pull-right">
+              <div class="direct-chat-contacts col-lg-3" style= "height:300px;overflow:auto;overflow-x:hidden;border:solid 1px blue;">
                 <div class="direct-chat-contacts">
-                  <ul id="usersinroom" class="contacts-list">
+                  <ul id="usersinroom" class="contacts-list" style="list-style:none;">
                   </ul>
                 </div>
               </div> 
@@ -36,107 +36,35 @@
         
             </div>
         </div>
+ 
       </div>
-      <div class="container pull-right">
-        <div class="direct-chat-contacts">
-                    <ul id="allroomlist" class="contacts-list">
-                      <li>
-                        <a href="#">
-                          
-
-                          <div class="contacts-list-info">
-                                <span class="contacts-list-name">
-                                  Count Dracula
-                                  <small class="contacts-list-date pull-right">2/28/2015</small>
-                                </span>
-                            <span class="contacts-list-msg">How have you been? I was...</span>
-                          </div>
-                          
-                        </a>
-                      </li>
-                      
-                      <li>
-                        <a href="#">
-                          
-
-                          <div class="contacts-list-info">
-                                <span class="contacts-list-name">
-                                  Sarah Doe
-                                  <small class="contacts-list-date pull-right">2/23/2015</small>
-                                </span>
-                            <span class="contacts-list-msg">I will be waiting for...</span>
-                          </div>
-                          
-                        </a>
-                      </li>
-                      
-                      <li>
-                        <a href="#">
-                          
-
-                          <div class="contacts-list-info">
-                                <span class="contacts-list-name">
-                                  Nadia Jolie
-                                  <small class="contacts-list-date pull-right">2/20/2015</small>
-                                </span>
-                            <span class="contacts-list-msg">I'll call you back at...</span>
-                          </div>
-                          
-                        </a>
-                      </li>
-                      
-                      <li>
-                        <a href="#">
-                          
-
-                          <div class="contacts-list-info">
-                                <span class="contacts-list-name">
-                                  Nora S. Vans
-                                  <small class="contacts-list-date pull-right">2/10/2015</small>
-                                </span>
-                            <span class="contacts-list-msg">Where is your new...</span>
-                          </div>
-                          
-                        </a>
-                      </li>
-                      
-                      <li>
-                        <a href="#">
-                         
-
-                          <div class="contacts-list-info">
-                                <span class="contacts-list-name">
-                                  John K.
-                                  <small class="contacts-list-date pull-right">1/27/2015</small>
-                                </span>
-                            <span class="contacts-list-msg">Can I take a look at...</span>
-                          </div>
-                          
-                        </a>
-                      </li>
-                      
-                      <li>
-                        <a href="#">
-                          
-
-                          <div class="contacts-list-info">
-                                <span class="contacts-list-name">
-                                  Kenneth M.
-                                  <small class="contacts-list-date pull-right">1/4/2015</small>
-                                </span>
-                            <span class="contacts-list-msg">Never mind I found...</span>
-                          </div>
-                          
-                        </a>
-                      </li>
-                      
-                    </ul>
-                    
-                  </div>
+      <div class="container ">
+        <div class="direct-chat-contacts" id="allroomlist">
+                    <!-- <ol id="allroomlist" class="contacts-list">
+                    </ol> -->
+        </div>
       </div>
   </div>
 
-
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Please enter room name..</h4>
+      </div>
+      <div class="modal-body">
+        <input id="createroomname" class="form-control" type="text" >
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" onclick="createroom(this)">Create Room</button>
+        
+      </div>
+    </div>
+  </div>
+</div>
           
  </body> 
 <!-- jQuery 2.1.4 -->
@@ -164,6 +92,8 @@
 
 
       var wsUri = {{.WSSERVER}} +"?email="+{{.email}};
+      updateroomlist();
+      setInterval(updateroomlist,5000);
       testWebSocket(wsUri);
     }
     
@@ -275,7 +205,7 @@
      $.ajax({
       type: "get",
       url: "/roomusers?room="+roomname,
-      async: false,
+      async: true,
       contentType: "application/json", 
       dataType: 'json',
       traditional: true,
@@ -299,44 +229,52 @@
       });
  }
 
- // function updateroomlist(){
- //    var roomsul = document.getElementById("allroomlist");
- //     $.ajax({
- //      type: "get",
- //      url: "/rooms",
- //      async: false,
- //      contentType: "application/json", 
- //      dataType: 'json',
- //      traditional: true,
- //      success: function (data, status){
- //          if (status=="success"){
- //            if(data != null && data.length>0){
- //              roomsul.innerHTML = "";
- //              for(var i=0; i<data.length; i++){
- //                var li = document.createElement("li");
- //                li.innerHTML = data[i];
- //                usersul.appendChild(li);
- //              }
- //            } else {
- //              //usersul.innerHTML = "";
- //            }
- //          } else {
- //            alert(data);
- //          }
- //        },
- //      error: function () {  alert(data); }
- //      });
- // }
+ function updateroomlist(){
+    var roomsdiv = document.getElementById("allroomlist");
+     $.ajax({
+      type: "get",
+      url: "/rooms",
+      async: false,
+      contentType: "application/json", 
+      dataType: 'json',
+      traditional: true,
+      success: function (data, status){
+          if (status=="success"){
+            //alert(data);
+            if(data != null && data.length>0){
+              roomsdiv.innerHTML = "";
+              var span = document.createElement("span");
+              span.style.marginLeft = span.style.marginRight = "5px";
+              span.innerHTML = "<a class=\"btn btn-warning btn-flat\"  data-toggle=\"modal\" data-target=\"#myModal\" >Create Room</a>";
+              roomsdiv.appendChild(span);
+              for(var i=0; i<data.length; i++){
+                var span = document.createElement("span");
+                span.style.marginLeft = span.style.marginRight = "5px";
+                span.innerHTML = "<a class=\"btn btn-info btn-flat\" onclick=\"joinroom("+data[i]+")\">"+data[i]+"</a>";
+                roomsdiv.appendChild(span);
+              }
+              
+            } else {
+              //roomsol.innerHTML = "";
+            }
+          } else {
+            alert(data);
+          }
+        },
+      error: function () {  alert(data); }
+      });
+ }
+
 
  function sendmsg(){
-  var input = document.getElementById("msgtosend");
-  //alert(input.value);
-  if (input.value == "") {
-    return
-  }else{
-    doSend(input.value);
-    input.value = "";
-  }
+      var input = document.getElementById("msgtosend");
+    //alert(input.value);
+    if (input.value == "") {
+      return;
+    }else{
+      doSend(input.value);
+      input.value = "";
+    }
  }
 
  function getNowFormatDate() { 
@@ -355,7 +293,60 @@
             + " " + date.getHours() + seperator2 + date.getMinutes() 
             + seperator2 + date.getSeconds(); 
     return currentdate; 
-} 
+  } 
 
- </script>
+  function createroom(evt){
+    var input = document.getElementById("createroomname");
+    var crname = input.value;
+    if (crname == ""){
+      var alertdiv = document.createElement("div");
+      alertdiv.className= "alert alert-warning alert-dismissible fade in";
+      alertdiv.attributes["role"] = "alert"; 
+      alertdiv.innerHTML = "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>invalid roomname!";
+      
+      evt.parentNode.appendChild(alertdiv);
+      setTimeout(function(){evt.parentNode.removeChild(alertdiv)},1000);
+      //$('#rnamealert').alert('close');
+    } else{
+      $.ajax({
+      type: "get",
+      url: "/createroom?roomname="+crname,
+      async: false,
+      contentType: "application/json", 
+      dataType: 'json',
+      traditional: true,
+      success: function (data, status){
+          if (status=="success"){
+            $('#myModal').modal('hide');
+            addnewroom(crname);
+            updateroomlist();
+          } else {
+            alert(status);
+            var alertdiv = document.createElement("div");
+            alertdiv.className= "alert alert-warning alert-dismissible fade in";
+            alertdiv.attributes["role"] = "alert"; 
+            alertdiv.innerHTML = "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>create failed! change your room name and try again!";
+            
+            evt.parentNode.appendChild(alertdiv);
+            setTimeout(function(){evt.parentNode.removeChild(alertdiv)},1000);
+          }
+        },
+      error: function () {
+            var alertdiv = document.createElement("div");
+            alertdiv.className= "alert alert-warning alert-dismissible fade in";
+            alertdiv.attributes["role"] = "alert"; 
+            alertdiv.innerHTML = "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>create failed! change your room name and try again!";
+            
+            evt.parentNode.appendChild(alertdiv);
+            setTimeout(function(){evt.parentNode.removeChild(alertdiv)},1000);
+        }
+      });
+    }
+  }
+
+  function addnewroom(crname){
+
+  }
+
+</script>
 </html> 

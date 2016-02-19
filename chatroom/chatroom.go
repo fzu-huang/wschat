@@ -13,6 +13,11 @@ type ActiveChatRoom struct {
 	Exitsig    chan bool //true when chatroom was destroied
 }
 
+func NewRoom(name string) ActiveChatRoom {
+	room := ActiveChatRoom{name, make(map[string]OnlineRoomUser), new(sync.RWMutex), make(chan message.Message, 1024), make(chan bool)}
+	return room
+}
+
 func (room *ActiveChatRoom) Run() {
 	for {
 		select {

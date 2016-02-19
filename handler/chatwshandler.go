@@ -22,7 +22,7 @@ func init() {
 
 func initChatRoom() {
 	defaultChatRoom = &room.ActiveChatRoom{
-		RoomName:   "plaza",
+		RoomName:   PLAZA,
 		OnlineUser: make(map[string]room.OnlineRoomUser),
 		Userlock:   new(sync.RWMutex),
 		Broadcast:  make(chan m.Message, 1024),
@@ -60,13 +60,7 @@ func WSCreateRoom(conn *websocket.Conn) {
 		conn.Write([]byte(ROOMRENAME))
 		return
 	}
-	activeChatRooms[roomname] = room.ActiveChatRoom{
-		RoomName:   roomname,
-		OnlineUser: make(map[string]room.OnlineRoomUser),
-		Userlock:   new(sync.RWMutex),
-		Broadcast:  make(chan m.Message, 1024),
-		Exitsig:    make(chan bool),
-	}
+	activeChatRooms[roomname] = room.NewRoom(roomname)
 	roomlistlock.Unlock()
 
 	ret, reason := CheckAndAddUser(conn)

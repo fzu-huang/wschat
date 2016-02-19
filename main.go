@@ -37,6 +37,9 @@ func main() {
 
 	m.Get("/roomusers", handler.ListusersinRoom)
 	m.Get("/rooms", handler.ListRoom)
+	m.Get("/createroom", handler.CreateRoom)
+
+	m.Get("/tab", func(ctx *macaron.Context) { ctx.HTML(200, "tab") })
 
 	//m.Use(websocket.Handler(handler.WSEnterRoom))
 	//m.Handle("POST", "/say", )

@@ -33,6 +33,25 @@ func WCLogout(context *macaron.Context) {
 
 }
 
+func CreateRoom(ctx *macaron.Context) {
+	roomname := ctx.Req.FormValue("roomname")
+	if roomname == "" || roomname == PLAZA {
+		ctx.Error(404, "invalid name")
+		return
+	}
+	roomlistlock.Lock()
+	if _, ok := activeChatRooms[roomname]; ok {
+		roomlistlock.Unlock()
+		ctx.Error(404, "invalid name")
+		return
+	}
+	tmproom := room.NewRoom(roomname)
+	activeChatRooms[roomname] = tmproom
+	roomlistlock.Unlock()
+	ctx.JSON(200, "create success!")
+	return
+}
+
 func ListRoom(ctx *macaron.Context) {
 	//	hasuser := ctx.Req.FormValue("hasuser")
 	//	if hasuser == "" {
@@ -41,12 +60,14 @@ func ListRoom(ctx *macaron.Context) {
 	//	}
 	var rooms []string
 	roomlistlock.RLock()
-	rooms = make([]string, len(activeChatRooms))
-	i := 0
+	rooms = make([]string, len(activeChatRooms)+1)
+	i := 1
+	rooms[0] = PLAZA
 	for key, _ := range activeChatRooms {
 		rooms[i] = key
 		i++
 	}
+	roomlistlock.RUnlock()
 	ctx.JSON(200, rooms)
 	return
 }
