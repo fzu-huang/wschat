@@ -93,7 +93,7 @@
 
       var wsUri = {{.WSSERVER}} +"?email="+{{.email}};
       updateroomlist();
-      setInterval(updateroomlist,5000);
+      setInterval(updateroomlist,50000);
       testWebSocket(wsUri);
     }
     
@@ -195,7 +195,13 @@
       output.scrollTop = output.scrollHeight;
 
     } 
+	
+   function closewsconn(){
+	websocket.close();
+	}	
+	
     window.onload=joinchatinplaza; 
+	window.onbeforeunload = closewsconn;
  </script>
 
  <script type="text/javascript">

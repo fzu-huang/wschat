@@ -159,6 +159,12 @@ func CheckAndAddUser(conn *websocket.Conn) (bool, string) {
 		return false, FINDNOROOM
 	}
 	user.Run()
+	msg := m.Message{
+			MType: USERLOGMSG,
+			Time:  time.Now().Format("2006-01-02 15:04:05"),
+		}
+	msg.LogMSG = m.LogMsg{user.Email, EXIT}
+	selectroom.Broadcast <- msg
 	room.CloseUser(&user)
 	return false, EXITSUS
 }

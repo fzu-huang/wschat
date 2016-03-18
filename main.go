@@ -46,9 +46,17 @@ func main() {
 
 	//http.HandleFunc("/index", handler.Index)
 
+	http.HandleFunc("/update", Updates)
+
 	http.Handle("/join", websocket.Handler(handler.WSEnterRoom))
 	http.Handle("/createroom", websocket.Handler(handler.WSCreateRoom))
 	go http.ListenAndServe(":"+strconv.Itoa(*port), nil)
 	m.Run(*port + 1)
 
+}
+
+func Updates(w http.ResponseWriter, req *http.Request) {
+	if req.Method == "PATCH" {
+
+	}
 }
